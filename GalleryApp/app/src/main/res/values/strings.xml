@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="from">from</string>
+    <string name="developercenter">Software Developer Center</string>
+    <string name="todo">TODO</string>
+    <string name="title_activity_first">Gallery</string>
+    <string name="title_no_storage">Greška</string>
+    <string name="galerija">Home</string>
+    <string name="mapa">Mapa</string>
+    <string name="camera">Camera</string>
+    <string name="label_cancel" />
+    <string name="label_submit" />
+    <string name="label_type_your_comment" />
+    <string name="label_report" />
+    <string name="description" />
+</resources>

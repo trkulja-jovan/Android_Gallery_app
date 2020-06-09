@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayAdapt"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--<android.widget.ImageView
+        android:id="@+id/sqrImg"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:cropToPadding="true"
+        android:focusable="true"
+        android:onClick="showFullImage"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:scaleType="center" />-->
+
+    <com.jsibbold.zoomage.ZoomageView
+        android:id="@+id/sqrImg"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:cropToPadding="true"
+        android:focusable="true"
+        android:longClickable="true"
+        android:onClick="showFullImage"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:scaleType="center" />
+
+</LinearLayout>
