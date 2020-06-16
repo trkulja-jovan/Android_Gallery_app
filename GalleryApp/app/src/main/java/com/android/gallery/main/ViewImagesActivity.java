@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -14,9 +15,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.android.gallery.R;
+import com.android.gallery.camera.CameraActivity;
 import com.android.gallery.fragments.ImagesFragment;
 import com.android.gallery.fragments.OneImageFragment;
-import com.android.gallery.utils.DescriptionGuard;
 import com.android.gallery.utils.Init;
 
 public class ViewImagesActivity extends AppCompatActivity{
@@ -57,10 +58,12 @@ public class ViewImagesActivity extends AppCompatActivity{
         });
 
         openCam.setOnClickListener(actionCam -> {
-            //create camera fragment using CameraAPI
+            if(Init.getInstance().checkCameraHardware(this)){
+                Intent cameraI = new Intent(this, CameraActivity.class);
+                cameraI.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(cameraI, 102);
+            }
         });
-
-
     }
 
     public void showFullImage(View v){
@@ -75,7 +78,6 @@ public class ViewImagesActivity extends AppCompatActivity{
             if(bd != null){
                 Bitmap bitmap = bd.getBitmap();
                 addImageToFragment(bitmap);
-                getSupportActionBar().hide();
             }
         }
     }
@@ -93,6 +95,15 @@ public class ViewImagesActivity extends AppCompatActivity{
     private void addImageToFragment(Bitmap bitmap){
         OneImageFragment oneImg = new OneImageFragment(bitmap);
         addViewToFragment(oneImg, true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(data == null){
+            return;
+        }
     }
 
 }

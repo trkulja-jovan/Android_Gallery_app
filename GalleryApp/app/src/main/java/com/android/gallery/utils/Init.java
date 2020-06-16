@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -112,6 +113,10 @@ public final class Init {
             throw new ActivityNotFoundException("Activity not found");
 
         return new DescriptionAlert(activity);
+    }
+
+    public boolean checkCameraHardware(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 
 }

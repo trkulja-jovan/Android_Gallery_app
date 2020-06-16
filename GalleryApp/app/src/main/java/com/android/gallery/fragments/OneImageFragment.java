@@ -49,7 +49,6 @@ public class OneImageFragment extends Fragment {
             setRetainInstance(true);
 
             toolbarDock = v.findViewById(R.id.toolbar4);
-            getActivity().setActionBar(toolbarDock);
 
             getActivity().getActionBar().show();
 
