@@ -18,6 +18,9 @@ import android.widget.FrameLayout;
 import com.android.gallery.R;
 import com.android.gallery.interfaces.Permissible;
 import com.android.gallery.utils.Init;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +44,8 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
     private Button captureImg;
     private Button btnDissmis;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +65,7 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                               LOCATION_COARSE_PERMISSION_CODE);
 
         Init.getInstance().initComponents(() -> {
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             mCamera = getCameraInstance();
 
             captureImg = findViewById(R.id.button6);
@@ -128,69 +134,25 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
             double[] geoInfo = getLastKnownLongitudeLatitude();
 
             media = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-            //geoTag(media.getAbsolutePath(),geoInfo[0],geoInfo[1]);
+            geoTag(media.getAbsolutePath(),geoInfo[0],geoInfo[1]);
 
             return media;
         }
     }
 
-    @SuppressLint("MissingPermission")
     private double[] getLastKnownLongitudeLatitude() {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        assert lm != null;
-        Location location = getFreeLocationService(lm);
-        if(location == null){
-            return null;
-        }
-        return fillArray(location);
-    }
-
-    @SuppressLint("MissingPermission")
-    private Location getFreeLocationService(@NonNull LocationManager lm){
-        boolean gps_enabled = false;
-        boolean net_enabled = false;
-        boolean coa_enabled = false;
-
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            if(gps_enabled)
-                return lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-
-        try {
-            net_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            if(net_enabled)
-                return lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-
-        try {
-            coa_enabled = lm.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
-            if(coa_enabled)
-                return lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private double[] fillArray(@NonNull  Location location){
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-
         double[] arr = new double[2];
-        arr[0] = longitude;
-        arr[1] = latitude;
+        arr[0] = 0.0;
+        arr[1] = 0.0;
+        mFusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(this, (location) -> {
+                                if(location != null){
+                                    arr[0] = location.getLongitude();
+                                    arr[1] = location.getLatitude();
 
-        System.out.println("Longitude " + arr[0] + " | Latitude " + arr[1]);
+                                    System.out.println("Longitude " + arr[0] + " | Latitude " + arr[1]);
+                                }
+                            });
 
         return arr;
     }
