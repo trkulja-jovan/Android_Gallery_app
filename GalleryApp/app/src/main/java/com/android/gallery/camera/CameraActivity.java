@@ -2,24 +2,23 @@ package com.android.gallery.camera;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.hardware.Camera;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.android.gallery.R;
+import com.android.gallery.database.MyAppDatabase;
+import com.android.gallery.database.ImageEntity;
 import com.android.gallery.interfaces.Permissible;
 import com.android.gallery.utils.Init;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
@@ -45,6 +44,7 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
     private Button btnDissmis;
 
     private FusedLocationProviderClient mFusedLocationClient;
+    private static MyAppDatabase myDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,10 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
 
             assert preview != null;
             preview.addView(mPreview);
+
+            myDatabase = Room.databaseBuilder(getApplicationContext(), MyAppDatabase.class, "imagedb")
+                             .allowMainThreadQueries()
+                             .build();
         });
 
         captureImg.setOnClickListener(action -> {
@@ -136,8 +140,26 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
             media = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
             geoTag(media.getAbsolutePath(),geoInfo[0],geoInfo[1]);
 
+            ImageEntity ie = createImageEntity(media, geoInfo);
+
+            CameraActivity.myDatabase.myDao().addImage(ie);
+
+            Toast.makeText(getApplicationContext(), "Slika uspešno dodata u bazu", Toast.LENGTH_SHORT)
+                 .show();
+
             return media;
         }
+    }
+
+    private ImageEntity createImageEntity(@NonNull File media, @NonNull double[] geoInfo){
+
+        ImageEntity ie = new ImageEntity();
+
+        ie.setPath(media.getAbsolutePath());
+        ie.setLongitude(geoInfo[0]);
+        ie.setLatitude(geoInfo[1]);
+
+        return ie;
     }
 
     private double[] getLastKnownLongitudeLatitude() {
@@ -149,8 +171,6 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                                 if(location != null){
                                     arr[0] = location.getLongitude();
                                     arr[1] = location.getLatitude();
-
-                                    System.out.println("Longitude " + arr[0] + " | Latitude " + arr[1]);
                                 }
                             });
 

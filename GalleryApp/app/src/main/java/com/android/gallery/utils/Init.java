@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 
-import com.android.gallery.description.DescriptionAlert;
 import com.android.gallery.exceptions.InitializeException;
 import com.android.gallery.interfaces.Initializable;
 
@@ -106,13 +105,6 @@ public final class Init {
 
     public static Permissions getPermissionInstance(){
         return perm == null ? perm = new Permissions() : perm;
-    }
-
-    public DescriptionAlert getAlertDescriptionInstance(Activity activity){
-        if(activity == null)
-            throw new ActivityNotFoundException("Activity not found");
-
-        return new DescriptionAlert(activity);
     }
 
     public boolean checkCameraHardware(Context context) {

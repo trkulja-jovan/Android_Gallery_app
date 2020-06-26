@@ -1,52 +1,43 @@
 package com.android.gallery.database;
 
-import android.location.Location;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity
+@Entity(tableName = "imagedb")
 public class ImageEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private Integer id;
 
-    @ColumnInfo(name = "opis_slike")
-    private String description;
-
     @ColumnInfo(name = "latitude")
-    private Integer latitude;//double
+    private Double latitude;//double
 
     @ColumnInfo(name = "longitude")
-    private Integer longitude;
+    private Double longitude;
 
-    @ColumnInfo(name = "slika")
-    private String nazSlike;
+    @ColumnInfo(name = "path")
+    private String path;
 
-    public void setNazSlike(String nazSlike) {
-        this.nazSlike = nazSlike;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-    public String getNazSlike() {
-        return nazSlike;
+    public String getPath() {
+        return path;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public Integer getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public Integer getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
@@ -54,11 +45,7 @@ public class ImageEntity implements Serializable {
         this.id = id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
 
-    public void setLatitude(Integer latitude) { this.latitude = latitude; }
-
-    public void setLongitude(Integer longitude) {  this.longitude = longitude; }
+    public void setLongitude(Double longitude) {  this.longitude = longitude; }
 }

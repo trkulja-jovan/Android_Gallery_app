@@ -31,7 +31,6 @@ public class OneImageFragment extends Fragment {
 
     private Bitmap b;
 
-    private ImageButton openDesc;
     private ImageButton openShare;
 
     private Toolbar toolbarDock;
@@ -51,19 +50,7 @@ public class OneImageFragment extends Fragment {
             toolbarDock = v.findViewById(R.id.toolbar4);
 
             getActivity().getActionBar().show();
-
-            openDesc = v.findViewById(R.id.btnDesc2);
             openShare = v.findViewById(R.id.btnShare2);
-        });
-
-        openDesc.setOnClickListener(action -> {
-
-            Init.getInstance()
-                 .getAlertDescriptionInstance(getActivity())
-                 .initAndShowDialog(this.b);
-
-            String txt = DescriptionGuard.getDescription();
-            System.out.println(txt);
         });
 
         openShare.setOnClickListener(action -> {
