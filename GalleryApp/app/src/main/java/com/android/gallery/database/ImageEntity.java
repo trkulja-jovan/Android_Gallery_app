@@ -13,10 +13,10 @@ public class ImageEntity implements Serializable {
     private Integer id;
 
     @ColumnInfo(name = "latitude")
-    private Double latitude;//double
+    private float latitude;//double
 
     @ColumnInfo(name = "longitude")
-    private Double longitude;
+    private float longitude;
 
     @ColumnInfo(name = "path")
     private String path;
@@ -33,11 +33,11 @@ public class ImageEntity implements Serializable {
         return id;
     }
 
-    public Double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public Double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
@@ -45,7 +45,7 @@ public class ImageEntity implements Serializable {
         this.id = id;
     }
 
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public void setLatitude(float latitude) { this.latitude = latitude; }
 
-    public void setLongitude(Double longitude) {  this.longitude = longitude; }
+    public void setLongitude(float longitude) {  this.longitude = longitude; }
 }

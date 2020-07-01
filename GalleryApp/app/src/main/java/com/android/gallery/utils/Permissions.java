@@ -42,6 +42,7 @@ public final class Permissions {
                 case CAMERA_PERMISSION_CODE   : CAMERA_ALLOWED   = 1;  break;
                 case LOCATION_PERMISSION_CODE : LOCATION_ALLOWED = 1;  break;
                 case LOCATION_COARSE_PERMISSION_CODE : LOCATION_COARSE = 1;  break;
+                case WRITE_STORAGE_PERMISSION_CODE : WRITE_STORAGE = 1; break;
                 default: throw new PermissibleException("Permission request code " + reqCode + " is wrong!");
             }
         }
@@ -76,18 +77,17 @@ public final class Permissions {
         Permissions.CAMERA_ALLOWED = status;
     }
 
-    public static int getLocationAllowedStatus(){
-        return LOCATION_ALLOWED;
-    }
-
-    public static int getLocationCoarseAllowedStatus(){
-        return LOCATION_COARSE;
-    }
-
     public void setLocationAllowedStatus(int status){
         if(status < 0 || status > 1)
             throw new InitializeException("Code status " + status + " is wrong!");
 
         Permissions.LOCATION_ALLOWED = status;
+    }
+
+    public void setWriteStorageAllowedStatus(int status){
+        if(status < 0 || status > 1)
+            throw new InitializeException("Code status " + status + " is wrong!");
+
+        Permissions.WRITE_STORAGE = status;
     }
 }

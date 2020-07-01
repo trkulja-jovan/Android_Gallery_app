@@ -5,8 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import android.Manifest;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Picture;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
@@ -32,6 +38,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.android.gallery.utils.Permissions.CAMERA_PERMISSION_CODE;
 import static com.android.gallery.utils.Permissions.LOCATION_PERMISSION_CODE;
 import static com.android.gallery.utils.Permissions.LOCATION_COARSE_PERMISSION_CODE;
+import static com.android.gallery.utils.Permissions.WRITE_STORAGE_PERMISSION_CODE;
 
 public class CameraActivity extends AppCompatActivity implements Permissible {
 
@@ -64,6 +71,11 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                        this, Manifest.permission.ACCESS_COARSE_LOCATION,
                               LOCATION_COARSE_PERMISSION_CODE);
 
+        Init.getPermissionInstance()
+            .checkPermission(this.getApplicationContext(),
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            WRITE_STORAGE_PERMISSION_CODE);
+
         Init.getInstance().initComponents(() -> {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             mCamera = getCameraInstance();
@@ -77,9 +89,7 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
             assert preview != null;
             preview.addView(mPreview);
 
-            myDatabase = Room.databaseBuilder(getApplicationContext(), MyAppDatabase.class, "imagedb")
-                             .allowMainThreadQueries()
-                             .build();
+            myDatabase = Init.createDatabaseInstance(getApplicationContext());
         });
 
         captureImg.setOnClickListener(action -> {
@@ -108,8 +118,12 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                     if (picture_file == null)
                         return;
                     else {
-                        try (FileOutputStream fos = new FileOutputStream(picture_file);) {
+                        try (FileOutputStream fos = new FileOutputStream(picture_file)) {
+                            galleryAddPic(picture_file.getPath());
                             fos.write(data);
+                            addGeoInfoToPicture(picture_file.getAbsolutePath());
+                            Toast.makeText(getApplicationContext(), "Slika uspešno dodata u bazu", Toast.LENGTH_SHORT)
+                                  .show();
                             mCamera.startPreview();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -124,38 +138,50 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
         });
     }
 
+    private void galleryAddPic(String currentPhotoPath) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
     private File getOutputMediaFile() {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return null;
         } else {
             File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "GUI");
             if (!mediaStorageDir.exists()) {
-                mediaStorageDir.mkdir();
+                mediaStorageDir.mkdirs();
             }
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             File media;
 
-            double[] geoInfo = getLastKnownLongitudeLatitude();
-
-            media = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
-            geoTag(media.getAbsolutePath(),geoInfo[0],geoInfo[1]);
-
-            ImageEntity ie = createImageEntity(media, geoInfo);
-
-            CameraActivity.myDatabase.myDao().addImage(ie);
-
-            Toast.makeText(getApplicationContext(), "Slika uspešno dodata u bazu", Toast.LENGTH_SHORT)
-                 .show();
+            String name = "IMG_" + timeStamp + ".jpg";
+            media = new File(mediaStorageDir, name);
 
             return media;
         }
     }
 
-    private ImageEntity createImageEntity(@NonNull File media, @NonNull double[] geoInfo){
+    private void addGeoInfoToPicture(String path){
+
+        double[] geoInfo = getLastKnownLongitudeLatitude();
+        ExifInterface exif = geoTag(path, geoInfo[0], geoInfo[1]);
+        float[] f = new float[2];
+        if(exif.getLatLong(f)){
+            System.err.println(f[0] + " | " + f[1]);
+            ImageEntity ie = createImageEntity(path, f);
+            CameraActivity.myDatabase.myDao().addImage(ie);
+        }
+
+    }
+
+    private ImageEntity createImageEntity(@NonNull String path, @NonNull float[] geoInfo){
 
         ImageEntity ie = new ImageEntity();
 
-        ie.setPath(media.getAbsolutePath());
+        ie.setPath(path);
         ie.setLongitude(geoInfo[0]);
         ie.setLatitude(geoInfo[1]);
 
@@ -169,15 +195,17 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
         mFusedLocationClient.getLastLocation()
                             .addOnSuccessListener(this, (location) -> {
                                 if(location != null){
-                                    arr[0] = location.getLongitude();
-                                    arr[1] = location.getLatitude();
+                                    arr[0] = location.getLatitude();
+                                    arr[1] = location.getLongitude();
+
+                                    System.out.println(arr[0] + " | " + arr[1]);
                                 }
                             });
 
         return arr;
     }
 
-    private void geoTag(String filename, double latitude, double longitude){
+    private ExifInterface geoTag(String filename, double longitude, double latitude){
         ExifInterface exif;
 
         try {
@@ -206,9 +234,12 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
             }
 
             exif.saveAttributes();
+            return exif;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
+
 
     }
 
@@ -248,12 +279,21 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
             else
                 Init.getPermissionInstance().setLocationCoarseAllowedStatus(0);
         }
+
+        if(requestCode == WRITE_STORAGE_PERMISSION_CODE){
+            if(grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED )
+                Init.getPermissionInstance().setWriteStorageAllowedStatus(1);
+            else
+                Init.getPermissionInstance().setWriteStorageAllowedStatus(0);
+        }
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         if (mCamera != null){
+            mCamera.setPreviewCallback(null);
+            mPreview.getHolder().removeCallback(mPreview);
             mCamera.release();
             mCamera = null;
         }

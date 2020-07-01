@@ -18,6 +18,7 @@ import com.android.gallery.R;
 import com.android.gallery.camera.CameraActivity;
 import com.android.gallery.fragments.ImagesFragment;
 import com.android.gallery.fragments.OneImageFragment;
+import com.android.gallery.map.MapsActivity;
 import com.android.gallery.utils.Init;
 
 public class ViewImagesActivity extends AppCompatActivity{
@@ -54,14 +55,16 @@ public class ViewImagesActivity extends AppCompatActivity{
         });
 
         openMap.setOnClickListener(actionMap -> {
-            //create map fragment with pinned location of images
+            Intent mapI = new Intent(this, MapsActivity.class);
+            startActivity(mapI);
+
         });
 
         openCam.setOnClickListener(actionCam -> {
             if(Init.getInstance().checkCameraHardware(this)){
                 Intent cameraI = new Intent(this, CameraActivity.class);
                 cameraI.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(cameraI, 102);
+                startActivity(cameraI);
             }
         });
     }
@@ -95,15 +98,6 @@ public class ViewImagesActivity extends AppCompatActivity{
     private void addImageToFragment(Bitmap bitmap){
         OneImageFragment oneImg = new OneImageFragment(bitmap);
         addViewToFragment(oneImg, true);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(data == null){
-            return;
-        }
     }
 
 }

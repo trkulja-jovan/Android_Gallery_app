@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
+import androidx.room.Room;
 
+import com.android.gallery.database.MyAppDatabase;
 import com.android.gallery.exceptions.InitializeException;
 import com.android.gallery.interfaces.Initializable;
 
@@ -76,17 +79,17 @@ public final class Init {
         int column_index_data;
 
         String absolutePathOfImage;
-        String[] projection = new String[0];
+        String[] projection;
+        Environment.getExternalStorageState();
+        projection = new String[]{MediaStore.Images.Media.DATA};
 
-        //projection = new String[]{MediaStore.MediaColumns.DATA, MediaStore.Images.Media.TITLE};
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             projection = new String[]{MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-        }
+        }*/
         this.cursor = context.getContentResolver().query(uri, projection, null, null, "date_added DESC");
 
         if (cursor != null) {
-            column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+            column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             while (cursor.moveToNext()) {
                 absolutePathOfImage = cursor.getString(column_index_data);
                 if(listOfAllImages.contains(absolutePathOfImage))
@@ -109,6 +112,13 @@ public final class Init {
 
     public boolean checkCameraHardware(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
+
+    public static MyAppDatabase createDatabaseInstance(Context context){
+        return Room.databaseBuilder(context, MyAppDatabase.class, "imagedb")
+                   .allowMainThreadQueries()
+                   .fallbackToDestructiveMigration()
+                   .build();
     }
 
 }
