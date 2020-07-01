@@ -2,19 +2,14 @@ package com.android.gallery.camera;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Picture;
-import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -119,12 +114,14 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                         return;
                     else {
                         try (FileOutputStream fos = new FileOutputStream(picture_file)) {
+                            getTag(picture_file.getAbsolutePath());
                             galleryAddPic(picture_file.getPath());
                             fos.write(data);
-                            addGeoInfoToPicture(picture_file.getAbsolutePath());
-                            Toast.makeText(getApplicationContext(), "Slika uspešno dodata u bazu", Toast.LENGTH_SHORT)
+                            Toast.makeText(getApplicationContext(), "@strings/uspesnoSacuvano", Toast.LENGTH_SHORT)
                                   .show();
+
                             mCamera.startPreview();
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -164,82 +161,30 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
         }
     }
 
-    private void addGeoInfoToPicture(String path){
-
-        double[] geoInfo = getLastKnownLongitudeLatitude();
-        ExifInterface exif = geoTag(path, geoInfo[0], geoInfo[1]);
-        float[] f = new float[2];
-        if(exif.getLatLong(f)){
-            System.err.println(f[0] + " | " + f[1]);
-            ImageEntity ie = createImageEntity(path, f);
-            CameraActivity.myDatabase.myDao().addImage(ie);
-        }
-
-    }
-
-    private ImageEntity createImageEntity(@NonNull String path, @NonNull float[] geoInfo){
+    private ImageEntity createImageEntity(@NonNull String path, @NonNull double[] geoInfo){
 
         ImageEntity ie = new ImageEntity();
 
         ie.setPath(path);
-        ie.setLongitude(geoInfo[0]);
-        ie.setLatitude(geoInfo[1]);
+        ie.setLatitude(geoInfo[0]);
+        ie.setLongitude(geoInfo[1]);
 
         return ie;
     }
 
-    private double[] getLastKnownLongitudeLatitude() {
+    private void getTag(String path) {
         double[] arr = new double[2];
-        arr[0] = 0.0;
-        arr[1] = 0.0;
+
         mFusedLocationClient.getLastLocation()
                             .addOnSuccessListener(this, (location) -> {
                                 if(location != null){
                                     arr[0] = location.getLatitude();
                                     arr[1] = location.getLongitude();
 
-                                    System.out.println(arr[0] + " | " + arr[1]);
+                                    ImageEntity ie = createImageEntity(path, arr);
+                                    CameraActivity.myDatabase.myDao().addImage(ie);
                                 }
                             });
-
-        return arr;
-    }
-
-    private ExifInterface geoTag(String filename, double longitude, double latitude){
-        ExifInterface exif;
-
-        try {
-            exif = new ExifInterface(filename);
-            int num1Lat = (int)Math.floor(latitude);
-            int num2Lat = (int)Math.floor((latitude - num1Lat) * 60);
-            double num3Lat = (latitude - ((double)num1Lat+((double)num2Lat/60))) * 3600000;
-
-            int num1Lon = (int)Math.floor(longitude);
-            int num2Lon = (int)Math.floor((longitude - num1Lon) * 60);
-            double num3Lon = (longitude - ((double)num1Lon+((double)num2Lon/60))) * 3600000;
-
-            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, num1Lat+"/1,"+num2Lat+"/1,"+num3Lat+"/1000");
-            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, num1Lon+"/1,"+num2Lon+"/1,"+num3Lon+"/1000");
-
-            if (latitude > 0) {
-                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, "N");
-            } else {
-                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, "S");
-            }
-
-            if (longitude > 0) {
-                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, "E");
-            } else {
-                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, "W");
-            }
-
-            exif.saveAttributes();
-            return exif;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
 
     }
 

@@ -1,8 +1,6 @@
 package com.android.gallery.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -45,12 +43,12 @@ public final class Init {
         perm = null;
     }
 
-    private static boolean isCreate(){
+    private static boolean isCreated(){
         return create;
     }
 
     public static Init getInstance(){
-        return isCreate() ? init : new Init();
+        return isCreated() ? init : new Init();
     }
 
     public void initComponents(@NonNull Initializable i){
@@ -83,9 +81,6 @@ public final class Init {
         Environment.getExternalStorageState();
         projection = new String[]{MediaStore.Images.Media.DATA};
 
-        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            projection = new String[]{MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-        }*/
         this.cursor = context.getContentResolver().query(uri, projection, null, null, "date_added DESC");
 
         if (cursor != null) {

@@ -65,11 +65,7 @@ public final class Permissions {
 
         Permissions.LOCATION_COARSE = status;
     }
-
-    public static int getCameraAllowedStatus(){
-        return CAMERA_ALLOWED;
-    }
-
+    
     public void setCameraAllowedStatus(int status){
         if(status < 0 || status > 1)
             throw new InitializeException("Code status " + status + " is wrong!");

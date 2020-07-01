@@ -32,6 +32,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Init.getInstance().initComponents(() -> {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            assert mapFragment != null;
             mapFragment.getMapAsync(this);
 
             myAppDatabase = Init.createDatabaseInstance(getApplicationContext());
@@ -45,8 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(images != null){
             for(ImageEntity ie : images){
-                float latitude = ie.getLatitude();
-                float longitude = ie.getLongitude();
+                double latitude = ie.getLatitude();
+                double longitude = ie.getLongitude();
                 System.err.println(latitude + " | " + longitude);
                 LatLng marker = new LatLng(latitude, longitude);
 
