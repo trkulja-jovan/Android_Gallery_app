@@ -45,13 +45,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         if(images != null){
+            int br = 0;
             for(ImageEntity ie : images){
                 double latitude = ie.getLatitude();
                 double longitude = ie.getLongitude();
                 System.err.println(latitude + " | " + longitude);
                 LatLng marker = new LatLng(latitude, longitude);
 
-                mMap.addMarker(new MarkerOptions().position(marker).title("Marker"));
+                mMap.addMarker(new MarkerOptions().position(marker).title("Marker " + ++br));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
             }
         }

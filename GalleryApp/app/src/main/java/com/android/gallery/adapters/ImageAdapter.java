@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.gallery.R;
+import com.android.gallery.utils.Init;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -22,14 +23,23 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
         this.images = images;
     }
 
-    class Holder extends RecyclerView.ViewHolder{
+    static class Holder extends RecyclerView.ViewHolder{
 
         private ImageView img;
 
         Holder(View view) {
             super(view);
             this.img = view.findViewById(R.id.sqrImg);
+
+            img.setOnClickListener(this::getPosition);
         }
+
+        private void getPosition(View action){
+            int pos = getAdapterPosition();
+
+            Init.getInstance().setImagePosition(pos);
+        }
+
     }
 
     @NonNull
@@ -47,9 +57,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
     public void onBindViewHolder(Holder h, int pos){
         String path = images.get(pos);
         Picasso.get()
-                .load(new File(path))
-                .fit()
-                .into(h.img);
+               .load(new File(path))
+               .fit()
+               .into(h.img);
     }
 
     @Override

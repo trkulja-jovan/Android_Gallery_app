@@ -28,45 +28,70 @@ public class ViewImagesActivity extends AppCompatActivity{
 
     private ImageButton openMap;
     private ImageButton openCam;
+    private ImageButton openHome;
+
+    private ImageButton btnShare;
+    private ImageButton btnDelete;
 
     private Toolbar toolbar;
-    //razlika sa fragmentima za tablet i mobilne telefone
-    //u landscape mode sa leve strane drawer
+    private Toolbar toolbar3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_images);
 
-        Init.getInstance().initComponents( () -> {
+        Init.getInstance().initComponents(this::initializeComponents);
 
-            fm = getSupportFragmentManager();
-            ImagesFragment fragment = new ImagesFragment();
+        openMap.setOnClickListener(this::openMap);
+        openCam.setOnClickListener(this::openCam);
+        openHome.setOnClickListener(this::showHomePage);
+    }
 
-            addViewToFragment(fragment, false);
+    private void initializeComponents(){
+        fm = getSupportFragmentManager();
 
-            openMap = findViewById(R.id.btnMap);
-            openCam = findViewById(R.id.btnCam);
+        openMap = findViewById(R.id.btnMap);
+        openCam = findViewById(R.id.btnCam);
+        openHome = findViewById(R.id.btnImages);
 
-            toolbar = findViewById(R.id.toolbar);
+        btnShare = findViewById(R.id.btnShare);
+        btnDelete = findViewById(R.id.btnDelete);
 
-            setSupportActionBar(toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar3 = findViewById(R.id.toolbar3);
 
-        });
+        btnShare.setVisibility(View.INVISIBLE);
+        btnDelete.setVisibility(View.INVISIBLE);
+        toolbar3.setVisibility(View.INVISIBLE);
 
-        openMap.setOnClickListener(actionMap -> {
-            Intent mapI = new Intent(this, MapsActivity.class);
-            startActivity(mapI);
+        setSupportActionBar(toolbar);
+        setHomePage();
+    }
 
-        });
+    private void openMap(View action){
+        Intent mapI = new Intent(this, MapsActivity.class);
+        startActivity(mapI);
+    }
 
-        openCam.setOnClickListener(actionCam -> {
-            if(Init.getInstance().checkCameraHardware(this)){
-                Intent cameraI = new Intent(this, CameraActivity.class);
-                cameraI.setAction(Intent.ACTION_GET_CONTENT);
-                startActivity(cameraI);
-            }
-        });
+    private void openCam(View action){
+        if(Init.getInstance().checkCameraHardware(this)){
+            Intent cameraI = new Intent(this, CameraActivity.class);
+            cameraI.setAction(Intent.ACTION_GET_CONTENT);
+            startActivity(cameraI);
+        }
+    }
+
+    private void showHomePage(View action){
+        setHomePage();
+        btnShare.setVisibility(View.INVISIBLE);
+        btnDelete.setVisibility(View.INVISIBLE);
+        toolbar3.setVisibility(View.INVISIBLE);
+    }
+
+    private void setHomePage(){
+        ImagesFragment fragment = new ImagesFragment();
+        addViewToFragment(fragment, false);
     }
 
     public void showFullImage(View v){
@@ -74,6 +99,7 @@ public class ViewImagesActivity extends AppCompatActivity{
         BitmapDrawable bd;
         if(i != null){
             try {
+
                 bd = (BitmapDrawable) i.getDrawable();
             } catch(ClassCastException e){
                 throw new ClassCastException("Cannot cast Drawable into BitmapDrawable!");
@@ -96,8 +122,12 @@ public class ViewImagesActivity extends AppCompatActivity{
     }
 
     private void addImageToFragment(Bitmap bitmap){
-        OneImageFragment oneImg = new OneImageFragment(bitmap);
+
+        toolbar3.setVisibility(View.VISIBLE);
+        btnShare.setVisibility(View.VISIBLE);
+        btnDelete.setVisibility(View.VISIBLE);
+
+        OneImageFragment oneImg = new OneImageFragment(bitmap, btnShare, btnDelete, toolbar3);
         addViewToFragment(oneImg, true);
     }
-
 }

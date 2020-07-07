@@ -33,6 +33,8 @@ public final class Init {
 
     private List<String> listOfAllImages;
 
+    private int position;
+
     private Init(){
         this.listOfAllImages = new ArrayList<>();
         this.context = null;
@@ -114,6 +116,14 @@ public final class Init {
                    .allowMainThreadQueries()
                    .fallbackToDestructiveMigration()
                    .build();
+    }
+
+    public void setImagePosition(int position){
+        this.position = position;
+    }
+
+    public int getImagePosition(){
+        return this.position;
     }
 
 }

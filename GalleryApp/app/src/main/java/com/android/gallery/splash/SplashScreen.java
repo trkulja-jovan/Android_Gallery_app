@@ -35,19 +35,7 @@ public class SplashScreen extends AppCompatActivity implements Permissible {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        Init.getInstance().initComponents(() -> {
-            txt = findViewById(R.id.textView2);
-            //first word
-            String t1 = Init.getColoredSpanned("Software", "#018ABE");
-            //second word
-            String t2 = Init.getColoredSpanned("Developer", "#02457A");
-            //third word
-            String t3 = Init.getColoredSpanned("Center", "#001B48");
-
-            txt.setText(Html.fromHtml(t1 + " " + t2 + " " + t3));
-
-            listPath = new ArrayList<>();
-        });
+        Init.getInstance().initComponents(this::initializeComponents);
 
         Init.getPermissionInstance()
             .checkPermission(getApplicationContext(),
@@ -55,22 +43,35 @@ public class SplashScreen extends AppCompatActivity implements Permissible {
                             READ_EXTERNAL_STORAGE,
                             STORAGE_PERMISSION_CODE);
 
-        new Handler().postDelayed(() -> {
+        new Handler().postDelayed(this::initSplashScreen, SPLASH_DURATION);
+    }
 
-            if(Permissions.getStorageAllowedStatus() == 1){
-                listPath = Init.getInstance().getImagesFromUri(this, true);
-            } else if(Permissions.getStorageAllowedStatus() == 0){
-                System.exit(0);
-            } else
-                throw new RuntimeException("Cannot resolve storage status!");
+    private void initSplashScreen(){
 
-            ImagesGuard.setBitmapsPath(listPath);
+        if(Permissions.getStorageAllowedStatus() == 1){
+            listPath = Init.getInstance().getImagesFromUri(this, true);
+        } else if(Permissions.getStorageAllowedStatus() == 0){
+            System.exit(0);
+        } else
+            throw new RuntimeException("Cannot resolve storage status!");
 
-            Intent intent = new Intent(SplashScreen.this, ViewImagesActivity.class);
-            SplashScreen.this.startActivity(intent);
-            SplashScreen.this.finish();
+        ImagesGuard.setBitmapsPath(listPath);
 
-        }, SPLASH_DURATION);
+        Intent intent = new Intent(SplashScreen.this, ViewImagesActivity.class);
+        SplashScreen.this.startActivity(intent);
+        SplashScreen.this.finish();
+    }
+
+    private void initializeComponents(){
+        txt = findViewById(R.id.textView2);
+
+        String t1 = Init.getColoredSpanned("Software", "#018ABE");
+        String t2 = Init.getColoredSpanned("Developer", "#02457A");
+        String t3 = Init.getColoredSpanned("Center", "#001B48");
+
+        txt.setText(Html.fromHtml(t1 + " " + t2 + " " + t3));
+
+        listPath = new ArrayList<>();
     }
 
     @Override

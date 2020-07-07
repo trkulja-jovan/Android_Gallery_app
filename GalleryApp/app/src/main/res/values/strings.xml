@@ -21,4 +21,9 @@
     <string name="odbaci">Odbaci</string>
     <string name="title_activity_maps">Map</string>
     <string name="uspesnoSacuvano">Slika uspešno dodata u bazu</string>
+    <string name="delete">Da li ste sigurni da želite obrisati sliku?</string>
+    <string name="potvrda">Potvrda</string>
+    <string name="yes">Da</string>
+    <string name="no">Ne</string>
+    <string name="successDeleted">Slika uspešno obrisana!</string>
 </resources>

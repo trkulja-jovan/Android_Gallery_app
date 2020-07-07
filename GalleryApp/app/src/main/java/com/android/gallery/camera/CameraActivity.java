@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -71,68 +72,59 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             WRITE_STORAGE_PERMISSION_CODE);
 
-        Init.getInstance().initComponents(() -> {
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            mCamera = getCameraInstance();
+        Init.getInstance().initComponents(this::initializeComponents);
 
-            captureImg = findViewById(R.id.button6);
-            btnDissmis = findViewById(R.id.btnDissmis);
-
-            mPreview = new CameraPreview(this, mCamera);
-            preview = findViewById(R.id.camera_frame);
-
-            assert preview != null;
-            preview.addView(mPreview);
-
-            myDatabase = Init.createDatabaseInstance(getApplicationContext());
-        });
-
-        captureImg.setOnClickListener(action -> {
-            if (mCamera != null) {
-                mCamera.takePicture(null, null, (data, camera) -> {
-                    File picture_file = getOutputMediaFile();
-                    if (picture_file == null)
-                        return;
-                    else {
-                        try (FileOutputStream fos = new FileOutputStream(picture_file);) {
-                            fos.write(data);
-                            mCamera.startPreview();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-
+        captureImg.setOnClickListener(this::captureImage);
         //ONLY FOR TEST
-        preview.setOnClickListener(action -> {
-            if (mCamera != null) {
-                mCamera.takePicture(null, null, (data, camera) -> {
-                    File picture_file = getOutputMediaFile();
-                    if (picture_file == null)
-                        return;
-                    else {
-                        try (FileOutputStream fos = new FileOutputStream(picture_file)) {
-                            getTag(picture_file.getAbsolutePath());
-                            galleryAddPic(picture_file.getPath());
-                            fos.write(data);
-                            Toast.makeText(getApplicationContext(), "@strings/uspesnoSacuvano", Toast.LENGTH_SHORT)
-                                  .show();
+        preview.setOnClickListener(this::captureImage);
 
-                            mCamera.startPreview();
+        btnDissmis.setOnClickListener(this::finishActivity);
+    }
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+    private void initializeComponents(){
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mCamera = getCameraInstance();
+
+        captureImg = findViewById(R.id.button6);
+        btnDissmis = findViewById(R.id.btnDissmis);
+
+        mPreview = new CameraPreview(this, mCamera);
+        preview = findViewById(R.id.camera_frame);
+
+        assert preview != null;
+        preview.addView(mPreview);
+
+        myDatabase = Init.createDatabaseInstance(getApplicationContext());
+    }
+
+    private void captureImage(View action){
+        if (mCamera != null) {
+            mCamera.takePicture(null, null, (data, camera) -> {
+                File picture_file = getOutputMediaFile();
+                if (picture_file == null)
+                    return;
+                else {
+                    try (FileOutputStream fos = new FileOutputStream(picture_file)) {
+                        getTag(picture_file.getAbsolutePath());
+                        galleryAddPic(picture_file.getPath());
+
+                        fos.write(data);
+
+                        Toast.makeText(getApplicationContext(), R.string.uspesnoSacuvano, Toast.LENGTH_SHORT)
+                                .show();
+
+                        mCamera.startPreview();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                });
-            }
-        });
+                }
+            });
+        }
+    }
 
-        btnDissmis.setOnClickListener(action -> {
-            this.finish();
-        });
+    private void finishActivity(View action){
+        this.finish();
     }
 
     private void galleryAddPic(String currentPhotoPath) {

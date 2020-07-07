@@ -3,14 +3,11 @@ package com.android.gallery.camera;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("ViewConstructor")
