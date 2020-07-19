@@ -1,2 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="from">from</string>
+    <string name="developercenter">Software Developer Center</string>
+    <string name="todo">TODO</string>
+    <string name="title_activity_first">Gallery</string>
+    <string name="title_no_storage">Error</string>
+    <string name="galerija">Home</string>
+    <string name="mapa">Maps</string>
+    <string name="camera">Camera</string>
+    <string name="label_cancel" />
+    <string name="label_submit" />
+    <string name="label_type_your_comment" />
+    <string name="label_report" />
+    <string name="description" />
+
+    <string name="capture">Capture</string>
+    <string name="slikaj">Take a picture</string>
+    <string name="odbaci">Dismiss</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="uspesnoSacuvano">Successful added picture to database!</string>
+    <string name="delete">Are you sure to delete picture?</string>
+    <string name="potvrda">Confirm</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="successDeleted">Successful delete!</string>
+</resources>

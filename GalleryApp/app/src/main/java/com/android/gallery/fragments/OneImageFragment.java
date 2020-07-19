@@ -18,16 +18,14 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.gallery.R;
-import com.android.gallery.exceptions.InitializeException;
 import com.android.gallery.utils.ImagesGuard;
 import com.android.gallery.utils.Init;
 import com.jsibbold.zoomage.ZoomageView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import static android.content.Intent.ACTION_SEND;
@@ -43,9 +41,9 @@ public class OneImageFragment extends Fragment {
 
     private Toolbar toolbar;
 
-    private String imagePath;
+    private Integer imagePath;
 
-    public OneImageFragment(Bitmap b, @NonNull ImageButton share, @NonNull ImageButton delete, @NonNull Toolbar t, @NonNull String path){
+    public OneImageFragment(Bitmap b, @NonNull ImageButton share, @NonNull ImageButton delete, @NonNull Toolbar t, @NonNull Integer path){
         this.b = b;
         this.btnShare = share;
         this.btnDelete = delete;
@@ -72,6 +70,10 @@ public class OneImageFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    private String getImagePath(){
+        return ImagesGuard.getBitmapsPath().get(imagePath);
+    }
+
     private void deletePicture(View action){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
@@ -80,25 +82,21 @@ public class OneImageFragment extends Fragment {
         builder.setMessage(R.string.delete);
 
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            if(imagePath.equals(""))
+            if(getImagePath().equals(""))
                 dialog.dismiss();
 
-            /*File f = new File(path);
-            if(f.exists()){
-                if(f.delete()){
-                    Toast.makeText(getContext(), R.string.successDeleted, Toast.LENGTH_LONG).show();
-                }
-            }
-
-            Objects.requireNonNull(getActivity()).getSupportFragmentManager()
-                                                 .popBackStack();*/
-            String deleteCmd = "rm -r " + imagePath;
+            String deleteCmd = "rm -r " + getImagePath();
             Runtime runtime = Runtime.getRuntime();
             try {
+                ImagesGuard.getBitmapsPath().remove(imagePath);
+
+                Objects.requireNonNull(Init.getRecyclerView().getAdapter()).notifyDataSetChanged();
+                Init.getRecyclerView().invalidate();
+
                 runtime.exec(deleteCmd);
                 Toast.makeText(getContext(), R.string.successDeleted, Toast.LENGTH_LONG).show();
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
             Objects.requireNonNull(getActivity()).getSupportFragmentManager()
                     .popBackStack();
@@ -142,5 +140,8 @@ public class OneImageFragment extends Fragment {
         btnShare.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
         toolbar.setVisibility(View.INVISIBLE);
+
+        List<String> newPaths = Init.getInstance().getImagesFromUri(getContext(), true);
+        ImagesGuard.setBitmapsPath(newPaths);
     }
 }

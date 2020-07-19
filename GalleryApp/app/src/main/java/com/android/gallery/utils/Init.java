@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.android.gallery.database.MyAppDatabase;
@@ -34,6 +35,8 @@ public final class Init {
     private List<String> listOfAllImages;
 
     private int position;
+
+    private static RecyclerView rc;
 
     private Init(){
         this.listOfAllImages = new ArrayList<>();
@@ -118,12 +121,12 @@ public final class Init {
                    .build();
     }
 
-    public void setImagePosition(int position){
-        this.position = position;
+    public static void setRecyclerView(@NonNull RecyclerView rc){
+        Init.rc = rc;
     }
 
-    public int getImagePosition(){
-        return this.position;
+    public static RecyclerView getRecyclerView(){
+        return rc;
     }
 
 }

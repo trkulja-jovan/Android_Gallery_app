@@ -42,6 +42,8 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
     private Toolbar toolbar;
     private Toolbar toolbar3;
 
+    private RecyclerView recView;
+
     private boolean isTablet;
 
     @Override
@@ -75,6 +77,8 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
         btnDelete.setVisibility(View.INVISIBLE);
         toolbar3.setVisibility(View.INVISIBLE);
 
+        recView = findViewById(R.id.recyclerView);
+
         setSupportActionBar(toolbar);
 
         if(isTablet)
@@ -92,8 +96,8 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
             ft.replace(R.id.fragmentTablet, maps).commit();
 
         } else {
-            Intent mapI = new Intent(this, MapsActivity.class);
-            startActivity(mapI);
+            MapsActivity ma = new MapsActivity();
+            addViewToFragment(ma, true);
         }
 
     }
@@ -112,7 +116,6 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
         } else {
             setHomePage();
         }
-        setHomePage();
         btnShare.setVisibility(View.INVISIBLE);
         btnDelete.setVisibility(View.INVISIBLE);
         toolbar3.setVisibility(View.INVISIBLE);
@@ -133,10 +136,6 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
         addViewToFragment(fragment, false);
     }
 
-    private void showFullImage(@NonNull Bitmap bitmap, @NonNull String path){
-         addImageToFragment(bitmap, path);
-    }
-
     private void addViewToFragment(Fragment fragment, boolean backStack){
         ft = fm.beginTransaction();
         ft.replace(R.id.frameFragmentLay, fragment);
@@ -147,7 +146,7 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
         ft.commit();
     }
 
-    private void addImageToFragment(Bitmap bitmap, String path){
+    private void addImageToFragment(Bitmap bitmap, Integer path){
 
         toolbar3.setVisibility(View.VISIBLE);
         btnShare.setVisibility(View.VISIBLE);
@@ -158,12 +157,11 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
     }
 
     @Override
-    public void onOptionSelected(View view, String path) {
+    public void onOptionSelected(View view, Integer path) {
         Bitmap bitmap = getBitmap(view);
-        if(!isTablet) {
-            assert bitmap != null;
-            showFullImage(bitmap, path);
-        }
+        assert bitmap != null;
+        if(!isTablet)
+            addImageToFragment(bitmap, path);
         else {
             OneImageFragment oneImg = new OneImageFragment(bitmap, btnShare, btnDelete, toolbar3, path);
             ft.replace(R.id.fragmentTablet, oneImg).addToBackStack("YES").commit();

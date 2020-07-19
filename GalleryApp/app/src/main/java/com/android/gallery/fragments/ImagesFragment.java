@@ -1,5 +1,6 @@
 package com.android.gallery.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,7 +20,7 @@ public class ImagesFragment extends Fragment {
 
     @FunctionalInterface
     public interface OnOptionClickListener {
-        void onOptionSelected(View view, String path);
+        void onOptionSelected(View view, Integer path);
     }
 
     private OnOptionClickListener mCallback;
@@ -34,6 +35,7 @@ public class ImagesFragment extends Fragment {
         Init.getInstance().initComponents( () -> {
 
             RecyclerView rw = v.findViewById(R.id.recyclerView);
+            Init.setRecyclerView(rw);
 
             GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
             manager.setOrientation(GridLayoutManager.VERTICAL);
@@ -43,6 +45,17 @@ public class ImagesFragment extends Fragment {
         });
 
         return v;
+    }
+
+    @Override
+    public void onAttach(Context activity){
+        super.onAttach(activity);
+
+        try {
+            mCallback = (OnOptionClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnOptionClickListener!");
+        }
     }
 
 }

@@ -28,26 +28,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
     static class Holder extends RecyclerView.ViewHolder{
 
         private ImageView img;
-        private String path;
-        private int pos;
+        private Integer path;
 
         Holder(View view) {
             super(view);
             this.img = view.findViewById(R.id.sqrImg);
 
-            img.setOnClickListener(action -> listener.onOptionSelected(view, path));
+            img.setOnClickListener(action -> listener.onOptionSelected(action, path));
+
         }
 
-        private void setPathAndPosition(String path, int pos){
+        private void setPathAndPosition(Integer path){
             this.path = path;
-            this.pos = pos;
         }
-
-        /*private void getPosition(View action){
-            int pos = getAdapterPosition();
-
-            Init.getInstance().setImagePosition(pos);
-        }*/
 
     }
 
@@ -65,7 +58,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder h, int pos){
         String path = images.get(pos);
-        h.setPathAndPosition(path, pos);
+        h.setPathAndPosition(pos);
 
         Picasso.get()
                .load(new File(path))
