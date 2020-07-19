@@ -1,8 +1,13 @@
 package com.android.gallery.map;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.android.gallery.R;
 import com.android.gallery.database.ImageEntity;
@@ -17,7 +22,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
@@ -25,7 +30,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private List<ImageEntity> images;
 
+    private View view;
+
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        view = inflater.inflate(R.layout.activity_maps, container, false);
+
+        Init.getInstance().initComponents(() -> {
+
+            assert getFragmentManager() != null;
+            SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
+            assert mapFragment != null;
+            mapFragment.getMapAsync(this);
+
+            myAppDatabase = Init.createDatabaseInstance(getContext());
+
+            images = myAppDatabase.myDao().getAllImages();
+        });
+
+        return view;
+    }
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -39,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             images = myAppDatabase.myDao().getAllImages();
         });
-    }
+    }*/
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

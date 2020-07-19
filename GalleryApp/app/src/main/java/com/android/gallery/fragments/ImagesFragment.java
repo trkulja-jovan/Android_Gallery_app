@@ -17,6 +17,13 @@ import com.android.gallery.utils.Init;
 
 public class ImagesFragment extends Fragment {
 
+    @FunctionalInterface
+    public interface OnOptionClickListener {
+        void onOptionSelected(View view, String path);
+    }
+
+    private OnOptionClickListener mCallback;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -32,7 +39,7 @@ public class ImagesFragment extends Fragment {
             manager.setOrientation(GridLayoutManager.VERTICAL);
 
             rw.setLayoutManager(manager);
-            rw.setAdapter(new ImageAdapter(ImagesGuard.getBitmapsPath()));
+            rw.setAdapter(new ImageAdapter(ImagesGuard.getBitmapsPath(), mCallback));
         });
 
         return v;

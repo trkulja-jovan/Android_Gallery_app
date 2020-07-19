@@ -27,7 +27,6 @@
         android:cropToPadding="true"
         android:focusable="true"
         android:longClickable="true"
-        android:onClick="showFullImage"
         android:paddingStart="8dp"
         android:paddingTop="8dp"
         android:scaleType="center" />

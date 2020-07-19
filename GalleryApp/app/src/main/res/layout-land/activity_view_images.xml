@@ -8,16 +8,14 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar3"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
+        android:layout_width="598dp"
+        android:layout_height="70dp"
         android:background="#0020F0"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameFragmentLay"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/btnShare"
@@ -56,11 +54,13 @@
 
     <FrameLayout
         android:id="@+id/frameFragmentLay"
-        android:layout_width="351dp"
-        android:layout_height="558dp"
+        android:layout_width="520dp"
+        android:layout_height="344dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
@@ -119,5 +119,26 @@
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/toolbar"
         app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <FrameLayout
+        android:id="@+id/fragmentTablet"
+        android:layout_width="520dp"
+        android:layout_height="344dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.gallery.R;
-import com.android.gallery.utils.Init;
+import com.android.gallery.fragments.ImagesFragment;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -18,27 +18,36 @@ import java.util.List;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
 
     private List<String> images;
+    private static ImagesFragment.OnOptionClickListener listener;
 
-    public ImageAdapter(List<String> images){
+    public ImageAdapter(List<String> images, ImagesFragment.OnOptionClickListener listener){
         this.images = images;
+        ImageAdapter.listener = listener;
     }
 
     static class Holder extends RecyclerView.ViewHolder{
 
         private ImageView img;
+        private String path;
+        private int pos;
 
         Holder(View view) {
             super(view);
             this.img = view.findViewById(R.id.sqrImg);
 
-            img.setOnClickListener(this::getPosition);
+            img.setOnClickListener(action -> listener.onOptionSelected(view, path));
         }
 
-        private void getPosition(View action){
+        private void setPathAndPosition(String path, int pos){
+            this.path = path;
+            this.pos = pos;
+        }
+
+        /*private void getPosition(View action){
             int pos = getAdapterPosition();
 
             Init.getInstance().setImagePosition(pos);
-        }
+        }*/
 
     }
 
@@ -56,10 +65,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.Holder> {
     @Override
     public void onBindViewHolder(Holder h, int pos){
         String path = images.get(pos);
+        h.setPathAndPosition(path, pos);
+
         Picasso.get()
                .load(new File(path))
                .fit()
                .into(h.img);
+
     }
 
     @Override

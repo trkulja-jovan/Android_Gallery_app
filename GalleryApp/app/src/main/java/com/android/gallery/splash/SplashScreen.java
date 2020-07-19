@@ -56,7 +56,9 @@ public class SplashScreen extends AppCompatActivity implements Permissible {
             throw new RuntimeException("Cannot resolve storage status!");
 
         ImagesGuard.setBitmapsPath(listPath);
-
+        for(String i : listPath){
+            System.out.println(i);
+        }
         Intent intent = new Intent(SplashScreen.this, ViewImagesActivity.class);
         SplashScreen.this.startActivity(intent);
         SplashScreen.this.finish();

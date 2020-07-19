@@ -25,6 +25,7 @@ import com.jsibbold.zoomage.ZoomageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
@@ -42,14 +43,14 @@ public class OneImageFragment extends Fragment {
 
     private Toolbar toolbar;
 
-    private int imagePosition;
+    private String imagePath;
 
-    public OneImageFragment(Bitmap b, @NonNull ImageButton share, @NonNull ImageButton delete, @NonNull Toolbar t){
+    public OneImageFragment(Bitmap b, @NonNull ImageButton share, @NonNull ImageButton delete, @NonNull Toolbar t, @NonNull String path){
         this.b = b;
         this.btnShare = share;
         this.btnDelete = delete;
         this.toolbar = t;
-        this.imagePosition = Init.getInstance().getImagePosition();
+        this.imagePath = path;
     }
 
     @Override
@@ -79,11 +80,10 @@ public class OneImageFragment extends Fragment {
         builder.setMessage(R.string.delete);
 
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            String path = getImagePath();
-            if(path.equals(""))
+            if(imagePath.equals(""))
                 dialog.dismiss();
 
-            File f = new File(path);
+            /*File f = new File(path);
             if(f.exists()){
                 if(f.delete()){
                     Toast.makeText(getContext(), R.string.successDeleted, Toast.LENGTH_LONG).show();
@@ -91,7 +91,17 @@ public class OneImageFragment extends Fragment {
             }
 
             Objects.requireNonNull(getActivity()).getSupportFragmentManager()
-                                                 .popBackStack();
+                                                 .popBackStack();*/
+            String deleteCmd = "rm -r " + imagePath;
+            Runtime runtime = Runtime.getRuntime();
+            try {
+                runtime.exec(deleteCmd);
+                Toast.makeText(getContext(), R.string.successDeleted, Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+
+            }
+            Objects.requireNonNull(getActivity()).getSupportFragmentManager()
+                    .popBackStack();
         });
 
         builder.setNegativeButton(R.string.no, (dialog, which) -> {
@@ -102,41 +112,27 @@ public class OneImageFragment extends Fragment {
         alert.show();
     }
 
-    private String getImagePath(){
-        try {
-            return ImagesGuard.getBitmapsPath().get(imagePosition);
-        } catch(IndexOutOfBoundsException e){
-            return "";
-        }
-    }
-
     private void showShareOptions(View action){
 
-        Intent share = new Intent(ACTION_SEND);
-        share.setType("image/jpeg");
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "temp_file_" + Math.random() + ".jpg");
 
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        try(FileOutputStream fout = new FileOutputStream(file)){
 
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temp_file_" + Math.random() + ".jpg");
-        try {
+            b.compress(Bitmap.CompressFormat.PNG, 100, fout);
+            fout.flush();
 
-            boolean res = f.createNewFile();
-            if(res){
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            } else {
-                throw new InitializeException("Error creating file");
-            }
+            file.setReadable(true, false);
 
-        } catch (IOException e) {
+            Intent intent = new Intent(ACTION_SEND);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.setType("image/jpg");
+
+            startActivity(Intent.createChooser(intent, "Share image via"));
+        } catch(IOException e){
             e.printStackTrace();
         }
-
-        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(Environment.getExternalStorageDirectory().getPath()));
-        startActivity(Intent.createChooser(share, "Share"));
-
     }
 
     @Override
