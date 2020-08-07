@@ -52,21 +52,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
 
-        Init.getInstance().initComponents(() -> {
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            assert mapFragment != null;
-            mapFragment.getMapAsync(this);
-
-            myAppDatabase = Init.createDatabaseInstance(getApplicationContext());
-
-            images = myAppDatabase.myDao().getAllImages();
-        });
-    }*/
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

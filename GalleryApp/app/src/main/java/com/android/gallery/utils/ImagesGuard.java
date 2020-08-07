@@ -8,9 +8,6 @@ public class ImagesGuard {
 
     private static List<String> bitmaps;
 
-    /*
-     * Private constructor: This class cannot be instanced.
-     */
     private ImagesGuard() {}
 
     public static void setBitmapsPath(List<String> bitmaps){

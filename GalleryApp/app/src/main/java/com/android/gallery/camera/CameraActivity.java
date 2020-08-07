@@ -75,6 +75,7 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
         Init.getInstance().initComponents(this::initializeComponents);
 
         captureImg.setOnClickListener(this::captureImage);
+
         //ONLY FOR TEST
         preview.setOnClickListener(this::captureImage);
 
@@ -82,6 +83,7 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
     }
 
     private void initializeComponents(){
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mCamera = getCameraInstance();
 
@@ -168,15 +170,15 @@ public class CameraActivity extends AppCompatActivity implements Permissible {
         double[] arr = new double[2];
 
         mFusedLocationClient.getLastLocation()
-                            .addOnSuccessListener(this, (location) -> {
-                                if(location != null){
-                                    arr[0] = location.getLatitude();
-                                    arr[1] = location.getLongitude();
+                .addOnSuccessListener(this, (location) -> {
+                    if(location != null){
+                        arr[0] = location.getLatitude();
+                        arr[1] = location.getLongitude();
 
-                                    ImageEntity ie = createImageEntity(path, arr);
-                                    CameraActivity.myDatabase.myDao().addImage(ie);
-                                }
-                            });
+                        ImageEntity ie = createImageEntity(path, arr);
+                        CameraActivity.myDatabase.myDao().addImage(ie);
+                    }
+                });
 
     }
 

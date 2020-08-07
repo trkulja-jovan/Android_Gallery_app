@@ -42,8 +42,6 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
     private Toolbar toolbar;
     private Toolbar toolbar3;
 
-    private RecyclerView recView;
-
     private boolean isTablet;
 
     @Override
@@ -77,8 +75,6 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
         btnDelete.setVisibility(View.INVISIBLE);
         toolbar3.setVisibility(View.INVISIBLE);
 
-        recView = findViewById(R.id.recyclerView);
-
         setSupportActionBar(toolbar);
 
         if(isTablet)
@@ -88,16 +84,11 @@ public class ViewImagesActivity extends AppCompatActivity implements ImagesFragm
     }
 
     private void openMap(View action){
+        MapsActivity maps = new MapsActivity();
         if(isTablet){
-
-            ft = fm.beginTransaction();
-
-            MapsActivity maps = new MapsActivity();
-            ft.replace(R.id.fragmentTablet, maps).commit();
-
+            addViewToFragment(maps, false);
         } else {
-            MapsActivity ma = new MapsActivity();
-            addViewToFragment(ma, true);
+            addViewToFragment(maps, true);
         }
 
     }

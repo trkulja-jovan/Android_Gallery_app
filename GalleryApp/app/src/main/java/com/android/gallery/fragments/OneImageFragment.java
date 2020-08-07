@@ -41,14 +41,18 @@ public class OneImageFragment extends Fragment {
 
     private Toolbar toolbar;
 
-    private Integer imagePath;
+    private Integer imagePos;
 
-    public OneImageFragment(Bitmap b, @NonNull ImageButton share, @NonNull ImageButton delete, @NonNull Toolbar t, @NonNull Integer path){
+    public OneImageFragment(@NonNull Bitmap b,
+                            @NonNull ImageButton share,
+                            @NonNull ImageButton delete,
+                            @NonNull Toolbar t,
+                            @NonNull Integer path){
         this.b = b;
         this.btnShare = share;
         this.btnDelete = delete;
         this.toolbar = t;
-        this.imagePath = path;
+        this.imagePos = path;
     }
 
     @Override
@@ -70,8 +74,8 @@ public class OneImageFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    private String getImagePath(){
-        return ImagesGuard.getBitmapsPath().get(imagePath);
+    private String getImagePos(){
+        return ImagesGuard.getBitmapsPath().get(imagePos);
     }
 
     private void deletePicture(View action){
@@ -82,13 +86,13 @@ public class OneImageFragment extends Fragment {
         builder.setMessage(R.string.delete);
 
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            if(getImagePath().equals(""))
+            if(getImagePos().equals(""))
                 dialog.dismiss();
 
-            String deleteCmd = "rm -r " + getImagePath();
+            String deleteCmd = "rm -r " + getImagePos();
             Runtime runtime = Runtime.getRuntime();
             try {
-                ImagesGuard.getBitmapsPath().remove(imagePath);
+                ImagesGuard.getBitmapsPath().remove(imagePos);
 
                 Objects.requireNonNull(Init.getRecyclerView().getAdapter()).notifyDataSetChanged();
                 Init.getRecyclerView().invalidate();
